@@ -43,4 +43,62 @@ describe('Calculates cost properly', () => {
         foodDeliverSystem.addDriver("Bob", 12.0);
         expect(foodDeliverSystem.getTotalCost()).toBe(39.0)
     })
+
+    it('Cost calculation successfull for drivers', () => {
+        const foodDeliverSystem = new FoodDeliverySystem([]);
+        foodDeliverSystem.addDeliveryLog(
+            "Alice", "2023-01-01T10:00:00", "2023-01-01T11:30:00"
+        )
+
+        foodDeliverSystem.addDeliveryLog(
+            "Bob", "2023-01-01T11:00:00", "2023-01-01T12:00:00"
+        )
+
+        expect(foodDeliverSystem.getDriverCost("Alice")).toBe(0.0);
+        expect(foodDeliverSystem.getDriverCost("Bob")).toBe(0.0);
+
+        foodDeliverSystem.addDriver("Alice", 10.0)
+        expect(foodDeliverSystem.getDriverCost("Alice")).toBe(15.0);
+        expect(foodDeliverSystem.getDriverCost("Bob")).toBe(0.0);
+
+        foodDeliverSystem.addDeliveryLog(
+            "Bob", "2023-01-01T11:00:00", "2023-01-01T12:00:00"
+        )
+        expect(foodDeliverSystem.getDriverCost("Alice")).toBe(15.0);
+        expect(foodDeliverSystem.getDriverCost("Bob")).toBe(0.0);
+
+        foodDeliverSystem.addDriver("Bob", 12.0);
+        expect(foodDeliverSystem.getDriverCost("Alice")).toBe(15.0);
+        expect(foodDeliverSystem.getDriverCost("Bob")).toBe(24.0);
+    })
+
+    it('Cost calculation successfull for drivers re-registration', () => {
+        const foodDeliverSystem = new FoodDeliverySystem([
+            {name: "Bob", hourlyRate: 12.0},
+            {name: "Alice", hourlyRate: 10.0}
+        ]);
+        foodDeliverSystem.addDeliveryLog(
+            "Alice", "2023-01-01T10:00:00", "2023-01-01T11:30:00"
+        )
+
+        foodDeliverSystem.addDeliveryLog(
+            "Bob", "2023-01-01T11:00:00", "2023-01-01T12:00:00"
+        )
+
+        expect(foodDeliverSystem.getTotalCost()).toBe(27);
+        expect(foodDeliverSystem.getDriverCost("Alice")).toBe(15)
+        expect(foodDeliverSystem.getDriverCost("Bob")).toBe(12);
+
+        foodDeliverSystem.addDriver("Bob", 20.0);
+        expect(foodDeliverSystem.getTotalCost()).toBe(27);
+        expect(foodDeliverSystem.getDriverCost("Alice")).toBe(15)
+        expect(foodDeliverSystem.getDriverCost("Bob")).toBe(12);
+
+        foodDeliverSystem.addDeliveryLog(
+            "Bob", "2023-01-01T11:00:00", "2023-01-01T12:00:00"
+        )
+        expect(foodDeliverSystem.getTotalCost()).toBe(47);
+        expect(foodDeliverSystem.getDriverCost("Alice")).toBe(15)
+        expect(foodDeliverSystem.getDriverCost("Bob")).toBe(32);
+    })
 });

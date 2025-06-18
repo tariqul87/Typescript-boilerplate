@@ -1,9 +1,9 @@
 export class FoodDeliverySystem {
     readonly MILISECONDS_IN_HOUR = 60 * 60 * 1000;
-    drivers: Map<string, DriverType>;
+    drivers: Map<string, DriverTypeWithCost>;
     deliveryLogs: DeliveryLogType[];
     totalCost: number;
-    constructor(drivers: DriverType[]) {
+    constructor(drivers: DriverType[] = []) {
         this.drivers = new Map();
         this.deliveryLogs = new Array(0);
 
@@ -14,7 +14,15 @@ export class FoodDeliverySystem {
         this.totalCost = 0;
     }
     addDriver = (name: string, hourlyRate: number): void => {
-        const driver = {name, hourlyRate};
+        const savedDriver = this.drivers.get(name);
+
+        // If driver re-register, we just update the hourly rate for next calculations
+        if (savedDriver) {
+            savedDriver.hourlyRate = hourlyRate;
+            return;
+        }
+
+        const driver = {name, hourlyRate, cost: 0};
         this.drivers.set(name, driver);
 
         this.deliveryLogs.forEach((log) => {
@@ -57,15 +65,30 @@ export class FoodDeliverySystem {
         const timeWorked = Math.abs(endTime - startTime) / this.MILISECONDS_IN_HOUR;
         const cost = driver.hourlyRate * timeWorked;
         this.totalCost += cost;
+
+        const currentDriverFromMap = this.drivers.get(driver.name);
+
+        if (currentDriverFromMap) {
+            currentDriverFromMap.cost += cost;
+        }
     }
     getTotalCost = (): number => {
         return this.totalCost;
+    }
+    getDriverCost = (name: string): number => {
+        return this.drivers.get(name)?.cost ?? 0;
     }
 }
 
 export type DriverType = {
     name: string,
     hourlyRate: number,
+}
+
+export type DriverTypeWithCost = {
+    name: string,
+    hourlyRate: number,
+    cost: number
 }
 
 export type DeliveryLogType = {
