@@ -1,8 +1,11 @@
 export default class Chicken {
+    readonly SOUND: string = 'Cluck Cluck';
     constructor() {
 
     }
-    cluck = () => {
-        console.log('Cluck Chicken 34fsdfsd44');
+    cluck = (): string => {
+        console.log(this.SOUND);
+
+        return this.SOUND;
     }
 }
