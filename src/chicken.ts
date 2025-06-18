@@ -3,7 +3,7 @@ export default class Chicken {
     constructor() {
 
     }
-    cluck = (): string => {
+    getSound = (): string => {
         console.log(this.SOUND);
 
         return this.SOUND;
